@@ -1,0 +1,2 @@
+rootProject.name='GoogleMap2_Source'
+include ':app'

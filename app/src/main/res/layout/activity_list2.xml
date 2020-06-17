@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#BEBEBE"
+    tools:context="com.example.googlemap2_source.ListClickActivity">
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="275dp"
+        app:srcCompat="@drawable/tjrrnfdka" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="359dp"
+        android:layout_below="@+id/imageView3"
+        android:layout_marginTop="79dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/blank" />
+
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:layout_below="@+id/imageView3"
+        android:layout_marginTop="-2dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/blank" />
+
+    <TextView
+        android:id="@+id/imgTitle"
+        android:layout_width="221dp"
+        android:layout_height="81dp"
+        android:layout_below="@+id/imageView3"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="45dp"
+        android:layout_marginTop="2dp"
+        android:gravity="center_vertical"
+        android:text="석굴암"
+        android:textSize="36sp" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_below="@+id/imgAdd"
+        android:layout_marginTop="-2dp"
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/bar1" />
+
+    <TextView
+        android:id="@+id/imgAdd"
+        android:layout_width="228dp"
+        android:layout_height="49dp"
+        android:layout_below="@+id/imageView6"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="23dp"
+        android:gravity="center_vertical"
+        android:text="경북 경주시 불국로 873-243" />
+
+    <TextView
+        android:id="@+id/add"
+        android:layout_width="136dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/imageView6"
+        android:layout_marginTop="23dp"
+        android:gravity="center"
+        android:text="주소 : " />
+
+    <Button
+        android:id="@+id/narBtn"
+        android:layout_width="match_parent"
+        android:layout_height="81dp"
+        android:layout_below="@+id/imageView5"
+        android:layout_marginTop="-9dp"
+        android:backgroundTint="#7B0395"
+        android:text="설명 듣기"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/imgText"
+        android:layout_width="320dp"
+        android:layout_height="184dp"
+        android:layout_below="@+id/imageView7"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="30dp"
+        android:text="경상북도 경주시 토함산 동쪽에 있는 남북국시대 통일신라의 김대성이 창건한 사찰. 암자. 국보. [개설] 국보 제24호. 대한불교조계종 11교구 본사인 불국사(佛國寺)의 부속암자이다. 창건 당시의 이름은 석불사(石佛寺)였다." />
+
+    <TextView
+        android:id="@+id/imgHo"
+        android:layout_width="110dp"
+        android:layout_height="42dp"
+        android:layout_below="@+id/imageView3"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="41dp"
+        android:layout_toEndOf="@+id/imgTitle"
+        android:gravity="center"
+        android:text="국보 24호" />
+
+</RelativeLayout>
