@@ -174,15 +174,15 @@ public class LoadingActivity extends Activity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            ArrayList<GetterSetter> arrayList = new ArrayList<>();
+            ArrayList<GetterSetter2> arrayList = new ArrayList<>();
 
             for(int i=0; i< arrN.size(); i++){
-                arrayList.add(new GetterSetter(arrN.get(i),arrX.get(i), arrY.get(i)));
+                arrayList.add(new GetterSetter2(arrN.get(i),arrX.get(i), arrY.get(i)));
                 Log.d(TAG, "데이터가 넘어갈까용?" + arrayList.get(i).getHeello());
             }
-            Intent intent = new Intent(context, MapsActivity.class);
-            intent.putExtra("arrayList",arrayList);
-            startActivity(intent);
+            Intent intents = new Intent(context, MapsActivity.class);
+            intents.putExtra("arrayList",arrayList);
+            startActivity(intents);
             finish();
         }
     }

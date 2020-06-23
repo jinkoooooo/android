@@ -67,7 +67,8 @@ public class MapsActivity extends AppCompatActivity
 
     private static final String TAG = "googlemap_example";
 
-    ArrayList<GetterSetter> arrayList = new ArrayList<>();
+    ArrayList<GetterSetter2> arrayList = new ArrayList<>();
+    ArrayList<GetterSetter> list = new ArrayList<>();
 
     private ClusterManager<GetterSetter> manager;
 
@@ -76,15 +77,18 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         //API
         setContentView(R.layout.activity_maps);
-        arrayList = (ArrayList<GetterSetter>) getIntent().getSerializableExtra("arraylist");
+        arrayList = (ArrayList<GetterSetter2>) getIntent().getSerializableExtra("arrayList");
 
+        for(int i =0; i< arrayList.size(); i++){
+            list.add(new GetterSetter(arrayList.get(i).getHeello(), arrayList.get(i).getLatitude(), arrayList.get(i).getLongtitude()));
+        }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
-/*
+
         Button listbtn = findViewById(R.id.golist);
         listbtn.bringToFront();
         listbtn.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +98,7 @@ public class MapsActivity extends AppCompatActivity
                 startActivity(intent2);
             }
         });
-*/
+
 
 
     }
@@ -105,6 +109,7 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "onMapReady :");
 
         mMap = googleMap;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.559975221378, 126.975312652739), mMap.getCameraPosition().zoom));
         mMap.setOnCameraIdleListener(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -137,7 +142,7 @@ public class MapsActivity extends AppCompatActivity
             Log.d(TAG, "데이터 받았숨?" + arrayList.get(i).getHeello());
         }
 
-        manager.addItems(arrayList);
+        manager.addItems(list);
         manager.cluster();
 
         /*for (int idx = 0; idx < arrX.size(); idx++) {
@@ -155,7 +160,10 @@ public class MapsActivity extends AppCompatActivity
             public boolean onClusterClick(Cluster<GetterSetter> cluster) {
 
                 //이거는 클러스트가 되어있는 아이템을 클릭햇을때
-
+                if (cluster.getSize() > 9)
+                {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cluster.getPosition(), mMap.getCameraPosition().zoom + 3));
+                }
                 return false;
             }
         });
@@ -181,4 +189,5 @@ public class MapsActivity extends AppCompatActivity
         if (manager!=null)
             manager.cluster();
     }
+
 }
