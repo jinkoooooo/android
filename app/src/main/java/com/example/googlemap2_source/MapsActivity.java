@@ -67,12 +67,6 @@ public class MapsActivity extends AppCompatActivity
 
     private static final String TAG = "googlemap_example";
 
-
-    ArrayList<Double> arrX = new ArrayList<>();
-    ArrayList<Double> arrY = new ArrayList<>();
-    ArrayList<String> arrN = new ArrayList<>();
-    ArrayList<String> arrS = new ArrayList<>();
-
     ArrayList<GetterSetter> arrayList = new ArrayList<>();
 
     private ClusterManager<GetterSetter> manager;
@@ -80,10 +74,10 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         //API
         setContentView(R.layout.activity_maps);
+        arrayList = (ArrayList<GetterSetter>) getIntent().getSerializableExtra("arraylist");
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -127,9 +121,7 @@ public class MapsActivity extends AppCompatActivity
         manager = new ClusterManager<>(this, mMap);
         manager.setRenderer(new MapCluster(this, mMap, manager));
         manager.setAnimation(true);
-
-
-
+/*
         arrayList.add(new GetterSetter("숭례문",37.559975221378,126.975312652739));
         arrayList.add(new GetterSetter("원각사지 십층 석탑",37.5715461695449,126.988207994364));
         arrayList.add(new GetterSetter("서울 북한산 신라 진흥왕 순수비",37.5240413763397,126.980350241652));
@@ -140,6 +132,10 @@ public class MapsActivity extends AppCompatActivity
         arrayList.add(new GetterSetter("보령 성주사지 낭혜화상탑비",36.3446996913308,126.655469090758));
         arrayList.add(new GetterSetter("부여 정림사지 오층석탑",36.2792973520136,126.913363436976));
         arrayList.add(new GetterSetter("남원 실상사 백장암 삼층석탑",35.4425391241814,127.619971568516));
+*/
+        for(int i =0; i< arrayList.size(); i++){
+            Log.d(TAG, "데이터 받았숨?" + arrayList.get(i).getHeello());
+        }
 
         manager.addItems(arrayList);
         manager.cluster();

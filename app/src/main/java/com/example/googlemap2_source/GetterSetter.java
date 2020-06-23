@@ -3,7 +3,9 @@ package com.example.googlemap2_source;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
-class GetterSetter implements ClusterItem {
+import java.io.Serializable;
+
+class GetterSetter implements ClusterItem, Serializable {
     String heello;
     LatLng latLng;
 

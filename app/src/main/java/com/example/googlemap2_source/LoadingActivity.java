@@ -3,6 +3,7 @@ package com.example.googlemap2_source;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,12 +34,17 @@ import java.util.List;
 public class LoadingActivity extends Activity {
 
     public static List SearchList = new ArrayList();
+
     private static final String TAG = "API_example";
     //API
     private String strServiceUrl, strServiceKey, numOfRows, pageNo, strUrl;
     TextView t;
     String Long = "";
     String Lat = "";
+
+    ArrayList<Double> arrX = new ArrayList<>();
+    ArrayList<Double> arrY = new ArrayList<>();
+    ArrayList<String> arrN = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,90 +59,27 @@ public class LoadingActivity extends Activity {
         //strServiceKey = "ya1BKq8iExZZZGk0EFE%2FFBzsuvW7zg3UxJ%2B2urlfmuw%2FsKlgCy%2BOt5kwNhwJbeTFoNkk26k0TcuCMjrVC4HX8Q%3D%3D";
         //strUrl = strServiceUrl + "?serviceKey=" + strServiceKey;
 
-        LoadingActivity.DownloadWebpageTask1 objTask1 = new LoadingActivity.DownloadWebpageTask1();
+        LoadingActivity.DownloadWebpageTask1 objTask1 = new LoadingActivity.DownloadWebpageTask1(this);
         objTask1.execute(strServiceUrl);
 
-        startLoading();
-
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
     }
 
     private class DownloadWebpageTask1 extends AsyncTask<String, Void, String> {
 
-        @Override
-        protected String doInBackground(String... urls) {
-            try {
-                return (String) downloadUrl((String) urls[0]);
-            } catch (IOException e) {
-                return "Fail download ! ";
-            }
+        String strName = "";
+        String strLocation = "";
+        String strIntro = "";
+        boolean bSet_Name = false;
+        boolean bSet_Addr = false;
+        boolean bset_Intro = false;
+        boolean bset_Long = false;
+        boolean bset_Lat = false;
+        String result;
+        Context context;
 
+        public DownloadWebpageTask1(Context context) {
+            this.context = context;
         }
-
-        protected void onPostExecute(String result) {
-            String strName = "";
-            String strLocation = "";
-            String strIntro = "";
-            boolean bSet_Name = false;
-            boolean bSet_Addr = false;
-            boolean bset_Intro = false;
-            boolean bset_Long = false;
-            boolean bset_Lat = false;
-
-
-            try {
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(true);
-                XmlPullParser xpp = factory.newPullParser();
-
-                xpp.setInput(new StringReader(result));
-                int eventType = xpp.getEventType();
-
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_DOCUMENT) {
-                        ;
-                    } else if (eventType == XmlPullParser.START_TAG) {
-                        String tag_name = xpp.getName();
-                        if (tag_name.equals("ccbaMnm1")) bSet_Name = true;
-                        if (tag_name.equals("longitude")) bset_Long = true;
-                        if (tag_name.equals("latitude")) bset_Lat = true;
-                        //  if (tag_name.equals("uiryeongculturalNewAddr")) bSet_Addr = true;
-                        // if (tag_name.equals("uiryeongculturalInfo")) bset_Intro = true;
-                    } else if (eventType == XmlPullParser.TEXT) {
-                        if (bSet_Name) {
-                            strName = xpp.getText();
-                            //t.append("Name: " + strName + "\n");
-                            bSet_Name = false;
-                            //test
-                            SearchList.add(strName);
-
-                        }
-                        if (bset_Long) {
-                            Long = xpp.getText();
-                            Log.d(TAG, "경도" + Long);
-                            //t.append("Long: " + Long + "\n");
-                            bset_Long = false;
-                        }
-                        if (bset_Lat) {
-                            Lat = xpp.getText();
-                            Log.d(TAG, "위도" + Lat);
-                            //t.append("Lat: " + Lat + "\n");
-                            bset_Lat = false;
-                        }
-
-
-                    } else if (eventType == XmlPullParser.END_TAG) {
-                        ;
-                    }
-                    eventType = xpp.next();
-                }
-            } catch (Exception e) {
-                t.setText(e.getMessage());
-            }
-
-        }
-
 
         private String downloadUrl(String myurl) throws IOException {
             HttpURLConnection urlConn = null;
@@ -157,14 +100,90 @@ public class LoadingActivity extends Activity {
                 urlConn.disconnect();
             }
         }
-    }
-    private void startLoading(){
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable(){
-            @Override
-            public void run(){
-                finish();
+
+        @Override
+        protected String doInBackground(String... urls) {
+            try {
+                result = (String) downloadUrl((String) urls[0]);
+            } catch (IOException e) {
+                return "Fail download ! ";
             }
-        },2000);
+
+            try {
+                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                factory.setNamespaceAware(true);
+                XmlPullParser xpp = factory.newPullParser();
+
+                xpp.setInput(new StringReader(result));
+                int eventType = xpp.getEventType();
+
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    if (eventType == XmlPullParser.START_DOCUMENT) {
+                        ;
+                    } else if (eventType == XmlPullParser.START_TAG) {
+                        String tag_name = xpp.getName();
+                        if (tag_name.equals("ccbaMnm1")) bSet_Name = true;
+                        if (tag_name.equals("longitude")) bset_Long = true;
+                        if (tag_name.equals("latitude")) bset_Lat = true;
+                        //  if (tag_name.equals("uiryeongculturalNewAddr")) bSet_Addr = true;
+                        // if (tag_name.equals("uiryeongculturalInfo")) bset_Intro = true;
+                    } else if (eventType == XmlPullParser.TEXT) {
+
+                        if (bSet_Name) {
+                            strName = xpp.getText();
+                            //t.append("Name: " + strName + "\n");
+                            arrN.add(strName);
+                            bSet_Name = false;
+                            SearchList.add(strName);
+
+                        }
+                        if (bset_Long) {
+                            Long = xpp.getText();
+                            Log.d(TAG, "경도" + Long);
+                            //t.append("Long: " + Long + "\n");
+                            arrY.add(new Double(Long));
+                            bset_Long = false;
+                        }
+                        if (bset_Lat) {
+                            Lat = xpp.getText();
+                            Log.d(TAG, "위도" + Lat);
+                            arrX.add(new Double(Lat));
+                            //t.append("Lat: " + Lat + "\n");
+                            bset_Lat = false;
+                        }
+
+
+                    } else if (eventType == XmlPullParser.END_TAG) {
+                        ;
+                    }
+                    eventType = xpp.next();
+                }
+            } catch (Exception e) {
+                t.setText(e.getMessage());
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            ArrayList<GetterSetter> arrayList = new ArrayList<>();
+
+            for(int i=0; i< arrN.size(); i++){
+                arrayList.add(new GetterSetter(arrN.get(i),arrX.get(i), arrY.get(i)));
+                Log.d(TAG, "데이터가 넘어갈까용?" + arrayList.get(i).getHeello());
+            }
+            Intent intent = new Intent(context, MapsActivity.class);
+            intent.putExtra("arrayList",arrayList);
+            startActivity(intent);
+            finish();
+        }
     }
 }
