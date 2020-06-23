@@ -101,10 +101,21 @@ public class MapsActivity extends AppCompatActivity
     String Long="";
     String Lat="";
 
+    ArrayList<Double> arrX = new ArrayList<>();
+    ArrayList<Double> arrY = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //숭례문
+        arrX.add(37.559975221378);
+        arrY.add(126.975312652739);
+
+        //원각사지 10층 석탐
+        arrX.add(37.5715461695449);
+        arrY.add(126.988207994364);
 
         //API
         setContentView(R.layout.activity_maps);
@@ -205,7 +216,7 @@ public class MapsActivity extends AppCompatActivity
                     } else if (eventType == XmlPullParser.TEXT) {
                         if (bSet_Name) {
                             strName = xpp.getText();
-                            t.append("Name: " + strName + "\n");
+                            //t.append("Name: " + strName + "\n");
                             bSet_Name = false;
 
                             //test
@@ -213,12 +224,12 @@ public class MapsActivity extends AppCompatActivity
 
                         }if (bset_Long) {
                             Long = xpp.getText();
-                            t.append("Long: " + Long + "\n");
+                            //t.append("Long: " + Long + "\n");
                             bset_Long = false;
                         }
                         if (bset_Lat) {
                             Lat = xpp.getText();
-                            t.append("Lat: " + Lat + "\n");
+                            //t.append("Lat: " + Lat + "\n");
                             bset_Lat = false;
                         }
 
@@ -262,6 +273,19 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "onMapReady :");
 
         mMap = googleMap;
+
+        Log.d( TAG, "함수 안에 들어갔따 :");
+
+        for (int idx = 0; idx < arrX.size(); idx++) {
+            Log.d( TAG, "for문 들어와땅 :");
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(new LatLng(arrY.get(idx), arrX.get(idx)));
+            Log.d( TAG, "값은: "+ arrY.get(idx));
+            markerOptions.title("숭례문");
+            mMap.addMarker(markerOptions);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(arrY.get(idx), arrX.get(idx)), 15);
+            mMap.moveCamera(cameraUpdate);
+        }
 
         //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
         //지도의 초기위치를 서울로 이동
@@ -328,12 +352,15 @@ public class MapsActivity extends AppCompatActivity
                 Log.d( TAG, "onMapClick :");
             }
         });
+
+
     }
 
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
             super.onLocationResult(locationResult);
+
 
             List<Location> locationList = locationResult.getLocations();
 
@@ -343,7 +370,6 @@ public class MapsActivity extends AppCompatActivity
 
                 currentPosition
                         = new LatLng(location.getLatitude(), location.getLongitude());
-
 
                 String markerTitle = getCurrentAddress(currentPosition);
                 String markerSnippet = "위도:" + String.valueOf(location.getLatitude())
@@ -357,6 +383,8 @@ public class MapsActivity extends AppCompatActivity
 
                 mCurrentLocatiion = location;
             }
+
+
 
 
         }
