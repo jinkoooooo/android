@@ -90,10 +90,6 @@ public class MapsActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
 
-        Intent intent = new Intent(this, LoadingActivity.class);
-
-        startActivity(intent);
-
 /*
         Button listbtn = findViewById(R.id.golist);
         listbtn.bringToFront();
