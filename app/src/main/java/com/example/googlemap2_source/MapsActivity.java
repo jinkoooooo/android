@@ -41,6 +41,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -60,643 +62,99 @@ import java.util.Locale;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback{
-
-    public static List SearchList = new ArrayList();
-
-
+        ActivityCompat.OnRequestPermissionsResultCallback {
     private GoogleMap mMap;
-    private Marker currentMarker = null;
 
     private static final String TAG = "googlemap_example";
-    private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-    private static final int UPDATE_INTERVAL_MS = 1000;  // 1초
-    private static final int FASTEST_UPDATE_INTERVAL_MS = 500; // 0.5초
 
 
-    // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
-    private static final int PERMISSIONS_REQUEST_CODE = 100;
-    boolean needRequest = false;
-
-
-    // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
-    String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};  // 외부 저장소
-
-
-    Location mCurrentLocatiion;
-    LatLng currentPosition;
-
-    private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
-    private Location location;
-
-
-    private View mLayout;  // Snackbar 사용하기 위해서는 View가 필요합니다.
-    // (참고로 Toast에서는 Context가 필요했습니다.)
-
-
-    //API
-    private String strServiceUrl,strServiceKey,numOfRows,pageNo,strUrl;
-    TextView t;
-    String Long="";
-    String Lat="";
 
     ArrayList<Double> arrX = new ArrayList<>();
     ArrayList<Double> arrY = new ArrayList<>();
+    ArrayList<String> arrN = new ArrayList<>();
+    ArrayList<String> arrS = new ArrayList<>();
 
+    ArrayList<GetterSetter> arrayList = new ArrayList<>();
+
+    private ClusterManager<GetterSetter> manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //숭례문
-        arrX.add(37.559975221378);
-        arrY.add(126.975312652739);
-
-        //원각사지 10층 석탐
-        arrX.add(37.5715461695449);
-        arrY.add(126.988207994364);
-
+/*
         //API
         setContentView(R.layout.activity_maps);
-        /*Intent intent = new Intent(this, LoadingActivity.class);
+        Intent intent = new Intent(this, LoadingActivity.class);
 
         startActivity(intent);*/
+/*
 
         Button listbtn = findViewById(R.id.golist);
         listbtn.bringToFront();
         listbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent2 = new Intent(getApplicationContext(),ListActivity.class);
+                Intent intent2 = new Intent(getApplicationContext(), ListActivity.class);
                 startActivity(intent2);
             }
         });
-
-        t=(TextView)findViewById(R.id.textView);
-
-        t.bringToFront();
-        strServiceUrl = "https://www.cha.go.kr/cha/SearchKindOpenapiList.do";
-        //strServiceKey = "ya1BKq8iExZZZGk0EFE%2FFBzsuvW7zg3UxJ%2B2urlfmuw%2FsKlgCy%2BOt5kwNhwJbeTFoNkk26k0TcuCMjrVC4HX8Q%3D%3D";
-        //strUrl = strServiceUrl + "?serviceKey=" + strServiceKey;
-
-        DownloadWebpageTask1 objTask1 = new DownloadWebpageTask1();
-        objTask1.execute(strServiceUrl);
+*/
 
 
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-
-
-        mLayout = findViewById(R.id.layout_main);
-
-        locationRequest = new LocationRequest()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(UPDATE_INTERVAL_MS)
-                .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
-
-
-        LocationSettingsRequest.Builder builder =
-                new LocationSettingsRequest.Builder();
-
-        builder.addLocationRequest(locationRequest);
-
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
-    private class DownloadWebpageTask1 extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... urls){
-            try {
-                return (String)downloadUrl((String)urls[0]);
-            } catch (IOException e){
-                return "Fail download ! ";
-            }
-
-        }
-
-        protected void onPostExecute(String result) {
-            String strName = "";
-            String strLocation = "";
-            String strIntro = "";
-            boolean bSet_Name= false;
-            boolean bSet_Addr = false;
-            boolean bset_Intro = false;
-            boolean bset_Long = false;
-            boolean bset_Lat = false;
 
 
-
-            try {
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(true);
-                XmlPullParser xpp = factory.newPullParser();
-
-                xpp.setInput(new StringReader(result));
-                int eventType = xpp.getEventType();
-
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_DOCUMENT) {
-                        ;
-                    } else if (eventType == XmlPullParser.START_TAG) {
-                        String tag_name = xpp.getName();
-                        if (tag_name.equals("ccbaMnm1")) bSet_Name = true;
-                        if (tag_name.equals("longitude")) bset_Long = true;
-                        if (tag_name.equals("latitude")) bset_Lat = true;
-                        //  if (tag_name.equals("uiryeongculturalNewAddr")) bSet_Addr = true;
-                        // if (tag_name.equals("uiryeongculturalInfo")) bset_Intro = true;
-                    } else if (eventType == XmlPullParser.TEXT) {
-                        if (bSet_Name) {
-                            strName = xpp.getText();
-                            //t.append("Name: " + strName + "\n");
-                            bSet_Name = false;
-
-                            //test
-                            SearchList.add(strName);
-
-                        }if (bset_Long) {
-                            Long = xpp.getText();
-                            //t.append("Long: " + Long + "\n");
-                            bset_Long = false;
-                        }
-                        if (bset_Lat) {
-                            Lat = xpp.getText();
-                            //t.append("Lat: " + Lat + "\n");
-                            bset_Lat = false;
-                        }
-
-
-
-                    } else if (eventType == XmlPullParser.END_TAG) {
-                        ;
-                    }
-                    eventType = xpp.next();
-                }
-            } catch (Exception e) {
-                t.setText(e.getMessage());
-            }
-
-        }
-
-
-        private String downloadUrl(String myurl) throws IOException{
-            HttpURLConnection urlConn=null;
-
-            try {
-                URL url = new URL(myurl);
-                urlConn = (HttpURLConnection) url.openConnection();
-                BufferedInputStream inBuf = new BufferedInputStream(urlConn.getInputStream());
-                BufferedReader bufReader = new BufferedReader(new InputStreamReader(inBuf, "utf-8"));
-
-                String strLine = null;
-                String strPage = "";
-                while ((strLine = bufReader.readLine()) != null) {
-                    strPage += strLine;
-                }
-                return strPage;
-            }finally {
-                urlConn.disconnect();
-            }
-        }
-    }
 
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         Log.d(TAG, "onMapReady :");
 
         mMap = googleMap;
+        manager = new ClusterManager<>(this, mMap);
+        manager.setRenderer(new MapCluster(this, mMap, manager));
+        manager.setAnimation(true);
 
-        Log.d( TAG, "함수 안에 들어갔따 :");
+        //arraylist를 이제 manager 다넣고 cluster 하면 이제 새로그침되서 맵에 보임
+        manager.addItems(arrayList);
+        manager.cluster();
 
-        for (int idx = 0; idx < arrX.size(); idx++) {
-            Log.d( TAG, "for문 들어와땅 :");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+
+
+        arrayList.add(new GetterSetter("숭례문",37.559975221378,126.975312652739));
+        arrayList.add(new GetterSetter("원각사지 십층 석탑",37.5715461695449,126.988207994364));
+        arrayList.add(new GetterSetter("서울 북한산 신라 진흥왕 순수비",37.5240413763397,126.980350241652));
+        arrayList.add(new GetterSetter("여주 고달사지 승탑",37.3939072455202,127.652160778359));
+        arrayList.add(new GetterSetter("보은 법주사 쌍사자 석등",36.5421679403972,127.833219375596));
+        arrayList.add(new GetterSetter("충주 탑평리 칠층석탑",37.0158885404695,127.866630082822));
+        arrayList.add(new GetterSetter("천안 봉선홍경사 갈기비",36.943151950305,127.134710477185));
+        arrayList.add(new GetterSetter("보령 성주사지 낭혜화상탑비",36.3446996913308,126.655469090758));
+        arrayList.add(new GetterSetter("부여 정림사지 오층석탑",36.2792973520136,126.913363436976));
+        arrayList.add(new GetterSetter("남원 실상사 백장암 삼층석탑",35.4425391241814,127.619971568516));
+
+        manager.addItems(arrayList);
+        manager.cluster();
+
+        /*for (int idx = 0; idx < arrX.size(); idx++) {
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(new LatLng(arrY.get(idx), arrX.get(idx)));
-            Log.d( TAG, "값은: "+ arrY.get(idx));
-            markerOptions.title("숭례문");
+            markerOptions.position(new LatLng(arrX.get(idx), arrY.get(idx)))
+                    .title(arrN.get(idx)) // 타이틀.
+                    .snippet("국보" + (idx+1) + "호");
+
             mMap.addMarker(markerOptions);
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(arrY.get(idx), arrX.get(idx)), 15);
-            mMap.moveCamera(cameraUpdate);
         }
-
-        //런타임 퍼미션 요청 대화상자나 GPS 활성 요청 대화상자 보이기전에
-        //지도의 초기위치를 서울로 이동
-        setDefaultLocation();
-
-
-
-        //런타임 퍼미션 처리
-        // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
-        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-
-
-
-        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
-
-            // 2. 이미 퍼미션을 가지고 있다면
-            // ( 안드로이드 6.0 이하 버전은 런타임 퍼미션이 필요없기 때문에 이미 허용된 걸로 인식합니다.)
-
-
-            startLocationUpdates(); // 3. 위치 업데이트 시작
-
-
-        }else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
-
-            // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
-
-                // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Snackbar.make(mLayout, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.",
-                        Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-
-                        // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                        ActivityCompat.requestPermissions( MapsActivity.this, REQUIRED_PERMISSIONS,
-                                PERMISSIONS_REQUEST_CODE);
-                    }
-                }).show();
-
-
-            } else {
-                // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
-                // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions( this, REQUIRED_PERMISSIONS,
-                        PERMISSIONS_REQUEST_CODE);
-            }
-
-        }
-
-
-
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-                Log.d( TAG, "onMapClick :");
-            }
-        });
-
-
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.52487, 126.92723), 8));
+*/
     }
-
-    LocationCallback locationCallback = new LocationCallback() {
-        @Override
-        public void onLocationResult(LocationResult locationResult) {
-            super.onLocationResult(locationResult);
-
-
-            List<Location> locationList = locationResult.getLocations();
-
-            if (locationList.size() > 0) {
-                location = locationList.get(locationList.size() - 1);
-                //location = locationList.get(0);
-
-                currentPosition
-                        = new LatLng(location.getLatitude(), location.getLongitude());
-
-                String markerTitle = getCurrentAddress(currentPosition);
-                String markerSnippet = "위도:" + String.valueOf(location.getLatitude())
-                        + " 경도:" + String.valueOf(location.getLongitude());
-
-                Log.d(TAG, "onLocationResult : " + markerSnippet);
-
-
-                //현재 위치에 마커 생성하고 이동
-                setCurrentLocation(location, markerTitle, markerSnippet);
-
-                mCurrentLocatiion = location;
-            }
-
-
-
-
-        }
-
-    };
-
-
-
-    private void startLocationUpdates() {
-
-        if (!checkLocationServicesStatus()) {
-
-            Log.d(TAG, "startLocationUpdates : call showDialogForLocationServiceSetting");
-
-            showDialogForLocationServiceSetting();
-        }else {
-
-            int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION);
-            int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION);
-
-
-
-            if (hasFineLocationPermission != PackageManager.PERMISSION_GRANTED ||
-                    hasCoarseLocationPermission != PackageManager.PERMISSION_GRANTED   ) {
-
-                Log.d(TAG, "startLocationUpdates : 퍼미션 안가지고 있음");
-                return;
-            }
-
-
-            Log.d(TAG, "startLocationUpdates : call mFusedLocationClient.requestLocationUpdates");
-
-            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-
-            if (checkPermission())
-                mMap.setMyLocationEnabled(true);
-
-        }
-
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        Log.d(TAG, "onStart");
-
-        if (checkPermission()) {
-
-            Log.d(TAG, "onStart : call mFusedLocationClient.requestLocationUpdates");
-            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
-            if (mMap!=null)
-                mMap.setMyLocationEnabled(true);
-
-        }
-
-
-    }
-
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
-
-        if (mFusedLocationClient != null) {
-
-            Log.d(TAG, "onStop : call stopLocationUpdates");
-            mFusedLocationClient.removeLocationUpdates(locationCallback);
-        }
-    }
-
-
-
-
-    public String getCurrentAddress(LatLng latlng) {
-
-        //지오코더... GPS를 주소로 변환
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-
-        List<Address> addresses;
-
-        try {
-
-            addresses = geocoder.getFromLocation(
-                    latlng.latitude,
-                    latlng.longitude,
-                    1);
-        } catch (IOException ioException) {
-            //네트워크 문제 힝
-            Toast.makeText(this, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();
-            return "지오코더 서비스 사용불가";
-        } catch (IllegalArgumentException illegalArgumentException) {
-            Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
-            return "잘못된 GPS 좌표";
-
-        }
-
-
-        if (addresses == null || addresses.size() == 0) {
-            Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
-            return "주소 미발견";
-
-        } else {
-            Address address = addresses.get(0);
-            return address.getAddressLine(0).toString();
-        }
-
-    }
-
-
-    public boolean checkLocationServicesStatus() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
-
-
-    public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
-
-
-        if (currentMarker != null) currentMarker.remove();
-
-
-        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(currentLatLng);
-        markerOptions.title(markerTitle);
-        markerOptions.snippet(markerSnippet);
-        markerOptions.draggable(true);
-
-
-        currentMarker = mMap.addMarker(markerOptions);
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
-        mMap.moveCamera(cameraUpdate);
-
-    }
-
-
-    public void setDefaultLocation() {
-
-
-        //디폴트 위치, Seoul
-        LatLng DEFAULT_LOCATION = new LatLng(37.56, 126.97);
-        String markerTitle = "위치정보 가져올 수 없음";
-        String markerSnippet = "위치 퍼미션과 GPS 활성 요부 확인하세요";
-
-
-        if (currentMarker != null) currentMarker.remove();
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(DEFAULT_LOCATION);
-        markerOptions.title(markerTitle);
-        markerOptions.snippet(markerSnippet);
-        markerOptions.draggable(true);
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        currentMarker = mMap.addMarker(markerOptions);
-
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15);
-        mMap.moveCamera(cameraUpdate);
-
-    }
-
-
-    //여기부터는 런타임 퍼미션 처리을 위한 메소드들
-    private boolean checkPermission() {
-
-        int hasFineLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        int hasCoarseLocationPermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-
-
-
-        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-                hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED   ) {
-            return true;
-        }
-
-        return false;
-
-    }
-
-
-
-    /*
-     * ActivityCompat.requestPermissions를 사용한 퍼미션 요청의 결과를 리턴받는 메소드입니다.
-     */
-    @Override
-    public void onRequestPermissionsResult(int permsRequestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grandResults) {
-
-        if ( permsRequestCode == PERMISSIONS_REQUEST_CODE && grandResults.length == REQUIRED_PERMISSIONS.length) {
-
-            // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
-
-            boolean check_result = true;
-
-
-            // 모든 퍼미션을 허용했는지 체크합니다.
-
-            for (int result : grandResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    check_result = false;
-                    break;
-                }
-            }
-
-
-            if ( check_result ) {
-
-                // 퍼미션을 허용했다면 위치 업데이트를 시작합니다.
-                startLocationUpdates();
-            }
-            else {
-                // 거부한 퍼미션이 있다면 앱을 사용할 수 없는 이유를 설명해주고 앱을 종료합니다.2 가지 경우가 있습니다.
-
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
-                        || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
-
-
-                    // 사용자가 거부만 선택한 경우에는 앱을 다시 실행하여 허용을 선택하면 앱을 사용할 수 있습니다.
-                    Snackbar.make(mLayout, "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요. ",
-                            Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View view) {
-
-                            finish();
-                        }
-                    }).show();
-
-                }else {
-
-
-                    // "다시 묻지 않음"을 사용자가 체크하고 거부를 선택한 경우에는 설정(앱 정보)에서 퍼미션을 허용해야 앱을 사용할 수 있습니다.
-                    Snackbar.make(mLayout, "퍼미션이 거부되었습니다. 설정(앱 정보)에서 퍼미션을 허용해야 합니다. ",
-                            Snackbar.LENGTH_INDEFINITE).setAction("확인", new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View view) {
-
-                            finish();
-                        }
-                    }).show();
-                }
-            }
-
-        }
-    }
-
-
-    //여기부터는 GPS 활성화를 위한 메소드들
-    private void showDialogForLocationServiceSetting() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
-        builder.setTitle("위치 서비스 비활성화");
-        builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
-                + "위치 설정을 수정하시겠습니까?");
-
-        builder.setCancelable(true);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                Intent callGPSSettingIntent
-                        = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivityForResult(callGPSSettingIntent, GPS_ENABLE_REQUEST_CODE);
-            }
-        });
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        builder.create().show();
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-
-            case GPS_ENABLE_REQUEST_CODE:
-
-                //사용자가 GPS 활성 시켰는지 검사
-                if (checkLocationServicesStatus()) {
-                    if (checkLocationServicesStatus()) {
-
-                        Log.d(TAG, "onActivityResult : GPS 활성화 되있음");
-
-
-                        needRequest = true;
-
-                        return;
-                    }
-                }
-
-                break;
-        }
-    }
-
-
-
 }

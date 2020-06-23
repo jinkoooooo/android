@@ -33,7 +33,7 @@ public class ListActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
 
-        for(int i=0 ;i<MapsActivity.SearchList.size();i++){
+        /*for(int i=0 ;i<MapsActivity.SearchList.size();i++){
 
             Button button = new Button(this);
 
@@ -50,7 +50,7 @@ public class ListActivity extends AppCompatActivity {
             });
 
             mainLayout.addView(button);
-        }
+        }*/
 
         setContentView(mainLayout);
 
