@@ -6,15 +6,15 @@ import com.google.maps.android.clustering.ClusterItem;
 import java.io.Serializable;
 
 class GetterSetter implements ClusterItem, Serializable {
-    String heello;
+    String Name;
     LatLng latLng;
 
     public String getHeello() {
-        return heello;
+        return Name;
     }
 
-    public void setHeello(String heello) {
-        this.heello = heello;
+    public void setHeello(String Name) {
+        this.Name = Name;
     }
 
     public LatLng getLatLng() {
@@ -25,9 +25,9 @@ class GetterSetter implements ClusterItem, Serializable {
         this.latLng = latLng;
     }
 
-    public GetterSetter (String heello, double latitude, double longtitude)
+    public GetterSetter (String Name, double latitude, double longtitude)
     {
-        this.heello = heello;
+        this.Name = Name;
         this.latLng = new LatLng(latitude, longtitude);
     }
 
@@ -38,7 +38,7 @@ class GetterSetter implements ClusterItem, Serializable {
 
     @Override
     public String getTitle() {
-        return heello;
+        return Name;
     }
 
     @Override

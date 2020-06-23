@@ -80,7 +80,7 @@ public class MapsActivity extends AppCompatActivity
         arrayList = (ArrayList<GetterSetter2>) getIntent().getSerializableExtra("arrayList");
 
         for(int i =0; i< arrayList.size(); i++){
-            list.add(new GetterSetter(arrayList.get(i).getHeello(), arrayList.get(i).getLatitude(), arrayList.get(i).getLongtitude()));
+            list.add(new GetterSetter(arrayList.get(i).getName(), arrayList.get(i).getLatitude(), arrayList.get(i).getLongtitude()));
         }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -109,7 +109,7 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "onMapReady :");
 
         mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.559975221378, 126.975312652739), mMap.getCameraPosition().zoom));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.559975221378, 126.975312652739), mMap.getCameraPosition().zoom+3));
         mMap.setOnCameraIdleListener(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -126,40 +126,20 @@ public class MapsActivity extends AppCompatActivity
         manager = new ClusterManager<>(this, mMap);
         manager.setRenderer(new MapCluster(this, mMap, manager));
         manager.setAnimation(true);
-/*
-        arrayList.add(new GetterSetter("숭례문",37.559975221378,126.975312652739));
-        arrayList.add(new GetterSetter("원각사지 십층 석탑",37.5715461695449,126.988207994364));
-        arrayList.add(new GetterSetter("서울 북한산 신라 진흥왕 순수비",37.5240413763397,126.980350241652));
-        arrayList.add(new GetterSetter("여주 고달사지 승탑",37.3939072455202,127.652160778359));
-        arrayList.add(new GetterSetter("보은 법주사 쌍사자 석등",36.5421679403972,127.833219375596));
-        arrayList.add(new GetterSetter("충주 탑평리 칠층석탑",37.0158885404695,127.866630082822));
-        arrayList.add(new GetterSetter("천안 봉선홍경사 갈기비",36.943151950305,127.134710477185));
-        arrayList.add(new GetterSetter("보령 성주사지 낭혜화상탑비",36.3446996913308,126.655469090758));
-        arrayList.add(new GetterSetter("부여 정림사지 오층석탑",36.2792973520136,126.913363436976));
-        arrayList.add(new GetterSetter("남원 실상사 백장암 삼층석탑",35.4425391241814,127.619971568516));
-*/
+
         for(int i =0; i< arrayList.size(); i++){
-            Log.d(TAG, "데이터 받았숨?" + arrayList.get(i).getHeello());
+            Log.d(TAG, "Receive DATA " + arrayList.get(i).getName());
         }
 
         manager.addItems(list);
         manager.cluster();
 
-        /*for (int idx = 0; idx < arrX.size(); idx++) {
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(new LatLng(arrX.get(idx), arrY.get(idx)))
-                    .title(arrN.get(idx)) // 타이틀.
-                    .snippet("국보" + (idx+1) + "호");
 
-            mMap.addMarker(markerOptions);
-        }
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.52487, 126.92723), 8));
-*/
         manager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<GetterSetter>() {
             @Override
             public boolean onClusterClick(Cluster<GetterSetter> cluster) {
 
-                //이거는 클러스트가 되어있는 아이템을 클릭햇을때
+                //클러스트가 되어있는 아이템을 클릭했을때
                 if (cluster.getSize() > 9)
                 {
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cluster.getPosition(), mMap.getCameraPosition().zoom + 3));
@@ -172,8 +152,7 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public boolean onClusterItemClick(GetterSetter item) {
 
-                //이거는 아이템 1개 클릭할때
-
+                //아이템 1개 클릭할때
                 return false;
             }
         });
@@ -183,7 +162,7 @@ public class MapsActivity extends AppCompatActivity
     @Override
     public void onCameraIdle() {
 
-        //맵을 손으로 움직이자나? 제일마지막에 맵이 멈췄을때 작동하는 공간임
+        //맵을 손으로 움직일때, 제일마지막에 맵이 멈췄을때 작동하는 공간
         Log.d("Map : ", "is Moved");
 
         if (manager!=null)

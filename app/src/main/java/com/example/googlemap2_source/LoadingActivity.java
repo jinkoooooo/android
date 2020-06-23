@@ -36,6 +36,7 @@ public class LoadingActivity extends Activity {
     public static List SearchList = new ArrayList();
 
     private static final String TAG = "API_example";
+
     //API
     private String strServiceUrl, strServiceKey, numOfRows, pageNo, strUrl;
     TextView t;
@@ -67,13 +68,10 @@ public class LoadingActivity extends Activity {
     private class DownloadWebpageTask1 extends AsyncTask<String, Void, String> {
 
         String strName = "";
-        String strLocation = "";
-        String strIntro = "";
         boolean bSet_Name = false;
-        boolean bSet_Addr = false;
-        boolean bset_Intro = false;
         boolean bset_Long = false;
         boolean bset_Lat = false;
+
         String result;
         Context context;
 
@@ -125,8 +123,6 @@ public class LoadingActivity extends Activity {
                         if (tag_name.equals("ccbaMnm1")) bSet_Name = true;
                         if (tag_name.equals("longitude")) bset_Long = true;
                         if (tag_name.equals("latitude")) bset_Lat = true;
-                        //  if (tag_name.equals("uiryeongculturalNewAddr")) bSet_Addr = true;
-                        // if (tag_name.equals("uiryeongculturalInfo")) bset_Intro = true;
                     } else if (eventType == XmlPullParser.TEXT) {
 
                         if (bSet_Name) {
@@ -178,7 +174,7 @@ public class LoadingActivity extends Activity {
 
             for(int i=0; i< arrN.size(); i++){
                 arrayList.add(new GetterSetter2(arrN.get(i),arrX.get(i), arrY.get(i)));
-                Log.d(TAG, "데이터가 넘어갈까용?" + arrayList.get(i).getHeello());
+                Log.d(TAG, "send DATA " + arrayList.get(i).getName());
             }
             Intent intents = new Intent(context, MapsActivity.class);
             intents.putExtra("arrayList",arrayList);

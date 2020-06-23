@@ -3,7 +3,7 @@ package com.example.googlemap2_source;
 import java.io.Serializable;
 
 public class GetterSetter2 implements Serializable {
-    String heello;
+    String Name;
 
     public double getLatitude() {
         return latitude;
@@ -16,13 +16,13 @@ public class GetterSetter2 implements Serializable {
     double latitude;
     double longtitude;
 
-    public String getHeello() {
-        return heello;
+    public String getName() {
+        return Name;
     }
 
-    public GetterSetter2(String heello, double latitude, double longtitude)
+    public GetterSetter2(String Name, double latitude, double longtitude)
     {
-        this.heello = heello;
+        this.Name = Name;
         this.latitude = latitude;
         this.longtitude = longtitude;
     }

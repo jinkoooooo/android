@@ -1,7 +1,6 @@
 package com.example.googlemap2_source;
 
 import android.content.Context;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
