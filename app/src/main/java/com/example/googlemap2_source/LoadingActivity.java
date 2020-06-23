@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -27,9 +28,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class LoadingActivity extends Activity {
 
     public static List SearchList = new ArrayList();
+    private static final String TAG = "API_example";
     //API
     private String strServiceUrl, strServiceKey, numOfRows, pageNo, strUrl;
     TextView t;
@@ -42,6 +45,7 @@ public class LoadingActivity extends Activity {
         setContentView(R.layout.activity_loading);
         startLoading();
 
+
         t = (TextView) findViewById(R.id.textView);
 
         t.bringToFront();
@@ -51,6 +55,7 @@ public class LoadingActivity extends Activity {
 
         LoadingActivity.DownloadWebpageTask1 objTask1 = new LoadingActivity.DownloadWebpageTask1();
         objTask1.execute(strServiceUrl);
+
 
     }
 
@@ -106,11 +111,13 @@ public class LoadingActivity extends Activity {
                         }
                         if (bset_Long) {
                             Long = xpp.getText();
+                            Log.d(TAG, "경도" + Long);
                             //t.append("Long: " + Long + "\n");
                             bset_Long = false;
                         }
                         if (bset_Lat) {
                             Lat = xpp.getText();
+                            Log.d(TAG, "위도" + Lat);
                             //t.append("Lat: " + Lat + "\n");
                             bset_Lat = false;
                         }

@@ -62,11 +62,10 @@ import java.util.Locale;
 
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+        ActivityCompat.OnRequestPermissionsResultCallback,GoogleMap.OnCameraIdleListener{
     private GoogleMap mMap;
 
     private static final String TAG = "googlemap_example";
-
 
 
     ArrayList<Double> arrX = new ArrayList<>();
@@ -82,14 +81,20 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-/*
+
         //API
         setContentView(R.layout.activity_maps);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+
         Intent intent = new Intent(this, LoadingActivity.class);
 
-        startActivity(intent);*/
-/*
+        startActivity(intent);
 
+/*
         Button listbtn = findViewById(R.id.golist);
         listbtn.bringToFront();
         listbtn.setOnClickListener(new View.OnClickListener() {
@@ -105,19 +110,12 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         Log.d(TAG, "onMapReady :");
 
         mMap = googleMap;
-        manager = new ClusterManager<>(this, mMap);
-        manager.setRenderer(new MapCluster(this, mMap, manager));
-        manager.setAnimation(true);
-
-        //arraylist를 이제 manager 다넣고 cluster 하면 이제 새로그침되서 맵에 보임
-        manager.addItems(arrayList);
-        manager.cluster();
+        mMap.setOnCameraIdleListener(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -130,6 +128,10 @@ public class MapsActivity extends AppCompatActivity
             return;
         }
         mMap.setMyLocationEnabled(true);
+        manager = new ClusterManager<>(this, mMap);
+        manager.setRenderer(new MapCluster(this, mMap, manager));
+        manager.setAnimation(true);
+
 
 
         arrayList.add(new GetterSetter("숭례문",37.559975221378,126.975312652739));
@@ -156,5 +158,35 @@ public class MapsActivity extends AppCompatActivity
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.52487, 126.92723), 8));
 */
+        manager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<GetterSetter>() {
+            @Override
+            public boolean onClusterClick(Cluster<GetterSetter> cluster) {
+
+                //이거는 클러스트가 되어있는 아이템을 클릭햇을때
+
+                return false;
+            }
+        });
+
+        manager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<GetterSetter>() {
+            @Override
+            public boolean onClusterItemClick(GetterSetter item) {
+
+                //이거는 아이템 1개 클릭할때
+
+                return false;
+            }
+        });
+
+    }
+
+    @Override
+    public void onCameraIdle() {
+
+        //맵을 손으로 움직이자나? 제일마지막에 맵이 멈췄을때 작동하는 공간임
+        Log.d("Map : ", "is Moved");
+
+        if (manager!=null)
+            manager.cluster();
     }
 }
