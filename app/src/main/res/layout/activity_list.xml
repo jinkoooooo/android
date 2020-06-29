@@ -40,7 +40,7 @@
         android:layout_marginStart="45dp"
         android:layout_marginTop="2dp"
         android:gravity="center_vertical"
-        android:text="숭례문"
+        android:text=""
         android:textSize="36sp" />
 
     <ImageView
@@ -61,7 +61,7 @@
         android:layout_marginStart="136dp"
         android:layout_marginTop="23dp"
         android:gravity="center_vertical"
-        android:text="서울 중구 세종대로 40" />
+        android:text="" />
 
     <TextView
         android:id="@+id/add"
@@ -91,7 +91,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="37dp"
         android:layout_marginTop="30dp"
-        android:text="600년 동안 한양을 둘러싸고 있었던 한양도성의 남쪽에 위치한 문. 대한민국 국보 1호. 현재도 서울의 중심에 위치하고 있다. 서울의 상징이나 다름 없는 건축물이다." />
+        android:text="" />
 
     <TextView
         android:id="@+id/imgHo"
@@ -102,6 +102,6 @@
         android:layout_marginTop="41dp"
         android:layout_toEndOf="@+id/imgTitle"
         android:gravity="center"
-        android:text="국보 제 1호" />
+        android:text="" />
 
 </RelativeLayout>

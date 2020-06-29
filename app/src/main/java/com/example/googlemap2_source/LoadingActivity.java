@@ -67,7 +67,7 @@ public class LoadingActivity extends Activity {
 
     }
 
-    private class DownloadWebpageTask1 extends AsyncTask<String, Void, String> {
+    class DownloadWebpageTask1 extends AsyncTask<String, Void, String> {
 
         String strName = "";
         boolean bSet_Name = false;
