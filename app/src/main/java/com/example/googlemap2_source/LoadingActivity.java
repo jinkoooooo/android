@@ -60,6 +60,8 @@ public class LoadingActivity extends Activity {
         //strServiceKey = "ya1BKq8iExZZZGk0EFE%2FFBzsuvW7zg3UxJ%2B2urlfmuw%2FsKlgCy%2BOt5kwNhwJbeTFoNkk26k0TcuCMjrVC4HX8Q%3D%3D";
         //strUrl = strServiceUrl + "?serviceKey=" + strServiceKey;
 
+        //문화재 상세 내용조회
+        //http://www.cha.go.kr/cha/SearchKindOpenapiDt.do?ccbaKdcd=11&ccbaAsno=00010000&ccbaCtcd=11
         LoadingActivity.DownloadWebpageTask1 objTask1 = new LoadingActivity.DownloadWebpageTask1(this);
         objTask1.execute(strServiceUrl);
 
@@ -114,7 +116,7 @@ public class LoadingActivity extends Activity {
 
                 xpp.setInput(new StringReader(result));
                 int eventType = xpp.getEventType();
-
+                //Log.d("123123123", xpp.);
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_DOCUMENT) {
                         ;

@@ -44,7 +44,8 @@
             android:id="@+id/editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter the Address." />
+            android:hint="Enter the Address."
+            android:background="@color/cardview_light_background"/>
 
         <Button
             android:id="@+id/button"
@@ -57,9 +58,9 @@
         android:id="@+id/golist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="64dp"
-        android:text="Button"
+        android:layout_marginStart="244dp"
+        android:layout_marginTop="30dp"
+        android:text="주변 문화제 전체 보기"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

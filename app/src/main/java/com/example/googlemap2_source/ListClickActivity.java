@@ -12,6 +12,10 @@ public class ListClickActivity extends AppCompatActivity {
 
     public static List params;
 
+    ListClickActivity(String test){
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

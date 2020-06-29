@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,10 @@ public class MapsActivity extends AppCompatActivity
         ActivityCompat.OnRequestPermissionsResultCallback,GoogleMap.OnCameraIdleListener{
     private GoogleMap mMap;
 
+    private Geocoder geocoder;
+    private Button button;
+    private EditText editText;
+
     private static final String TAG = "googlemap_example";
 
     ArrayList<GetterSetter2> arrayList = new ArrayList<>();
@@ -78,6 +83,9 @@ public class MapsActivity extends AppCompatActivity
         //API
         setContentView(R.layout.activity_maps);
         arrayList = (ArrayList<GetterSetter2>) getIntent().getSerializableExtra("arrayList");
+
+        editText = (EditText) findViewById(R.id.editText);
+        button=(Button)findViewById(R.id.button);
 
         for(int i =0; i< arrayList.size(); i++){
             list.add(new GetterSetter(arrayList.get(i).getName(), arrayList.get(i).getLatitude(), arrayList.get(i).getLongtitude()));
@@ -109,6 +117,9 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "onMapReady :");
 
         mMap = googleMap;
+
+        geocoder = new Geocoder(this);
+
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(37.559975221378, 126.975312652739), mMap.getCameraPosition().zoom+3));
         mMap.setOnCameraIdleListener(this);
 
@@ -154,6 +165,53 @@ public class MapsActivity extends AppCompatActivity
 
                 //아이템 1개 클릭할때
                 return false;
+            }
+        });
+
+
+        // 검색 버튼 이벤트
+        button.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+                if(editText != null){ //에러 고쳐야함.!~!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                    String str=editText.getText().toString();
+
+                    List<Address> addressList = null;
+                    try {
+                        // editText에 입력한 텍스트(주소, 지역, 장소 등)을 지오 코딩을 이용해 변환
+                        addressList = geocoder.getFromLocationName(
+                                str, // 주소
+                                10); // 최대 검색 결과 개수
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // 콤마를 기준으로 split
+                    String []splitStr = addressList.get(0).toString().split("=");
+
+                    String address = splitStr[1].substring(splitStr[1].indexOf("\"") + 1,splitStr[1].indexOf("]") - 1);
+                    address = address.replace(",",""); // 주소
+
+                    String latitude = splitStr[11].substring(0, splitStr[11].indexOf(",")); // 위도
+                    String longitude = splitStr[13].substring(0, splitStr[13].indexOf(",")); // 경도
+
+                    // 좌표(위도, 경도) 생성
+                    LatLng point = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                    // 마커 생성
+                    MarkerOptions mOptions2 = new MarkerOptions();
+                    mOptions2.title("search result");
+                    mOptions2.snippet(address);
+                    mOptions2.position(point);
+                    // 마커 추가
+                    //mMap.addMarker(mOptions2);
+                    // 해당 좌표로 화면 줌
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point,15));
+                }else{
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mMap.getCameraPosition().target, mMap.getCameraPosition().zoom));
+                }
             }
         });
 

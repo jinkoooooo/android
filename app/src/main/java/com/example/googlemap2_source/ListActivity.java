@@ -10,6 +10,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,24 +35,29 @@ public class ListActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
 
-        /*for(int i=0 ;i<MapsActivity.SearchList.size();i++){
+        for(int i=0 ;i<LoadingActivity.SearchList.size();i++){
+
+            /*RadioGroup radioGroup = new RadioGroup(this);
+
+            RadioButton radioButton = new RadioButton()*/
 
             Button button = new Button(this);
 
-            button.setText(MapsActivity.SearchList.get(i).toString());
+            button.setText(LoadingActivity.SearchList.get(i).toString());
 
             button.setLayoutParams(params);
 
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     Intent intent2 = new Intent(getApplicationContext(),ListClickActivity.class);
                     startActivity(intent2);
                 }
             });
 
             mainLayout.addView(button);
-        }*/
+        }
 
         setContentView(mainLayout);
 
