@@ -33,7 +33,7 @@ import java.util.List;
 
 public class LoadingActivity extends Activity {
 
-    public static List SearchList = new ArrayList();
+    public static  ArrayList<ApiList> SearchList2 = new ArrayList<ApiList>();
 
     private static final String TAG = "API_example";
 
@@ -42,6 +42,7 @@ public class LoadingActivity extends Activity {
     TextView t;
     String Long = "";
     String Lat = "";
+
 
     ArrayList<Double> arrX = new ArrayList<>();
     ArrayList<Double> arrY = new ArrayList<>();
@@ -70,9 +71,13 @@ public class LoadingActivity extends Activity {
     class DownloadWebpageTask1 extends AsyncTask<String, Void, String> {
 
         String strName = "";
+        String param = "";
         boolean bSet_Name = false;
         boolean bset_Long = false;
         boolean bset_Lat = false;
+        boolean bset_Kdcd = false;
+        boolean bset_Ctcd = false;
+        boolean bset_Asno = false;
 
         String result;
         Context context;
@@ -114,6 +119,8 @@ public class LoadingActivity extends Activity {
                 factory.setNamespaceAware(true);
                 XmlPullParser xpp = factory.newPullParser();
 
+                ApiList tempList = new ApiList();
+
                 xpp.setInput(new StringReader(result));
                 int eventType = xpp.getEventType();
                 //Log.d("123123123", xpp.);
@@ -125,18 +132,44 @@ public class LoadingActivity extends Activity {
                         if (tag_name.equals("ccbaMnm1")) bSet_Name = true;
                         if (tag_name.equals("longitude")) bset_Long = true;
                         if (tag_name.equals("latitude")) bset_Lat = true;
+                        if (tag_name.equals("ccbaKdcd")) bset_Kdcd = true;
+                        if (tag_name.equals("ccbaCtcd")) bset_Ctcd = true;
+                        if (tag_name.equals("ccbaAsno")) bset_Asno = true;
                     } else if (eventType == XmlPullParser.TEXT) {
 
                         if (bSet_Name) {
                             strName = xpp.getText();
                             //t.append("Name: " + strName + "\n");
                             arrN.add(strName);
-                            bSet_Name = false;
-                            SearchList.add(strName);
 
+                            tempList = new ApiList();
+                            tempList.setCcName(strName);
+
+                            bSet_Name = false;
+                        }
+                        if (bset_Kdcd) {
+                            param = xpp.getText();
+                            tempList.setCcbaKdcd(param);
+
+                            bset_Kdcd = false;
+                        }
+                        if (bset_Ctcd) {
+                            param = xpp.getText();
+                            tempList.setCcbaCtcd(param);
+
+                            bset_Ctcd = false;
+                        }
+                        if (bset_Asno) {
+                            param = xpp.getText();
+                            tempList.setCcbaAsno(param);
+
+                            SearchList2.add(tempList);
+
+                            bset_Asno = false;
                         }
                         if (bset_Long) {
                             Long = xpp.getText();
+                            tempList.setLongitude(Long.toString());
                             Log.d(TAG, "경도" + Long);
                             //t.append("Long: " + Long + "\n");
                             arrY.add(new Double(Long));
@@ -144,11 +177,13 @@ public class LoadingActivity extends Activity {
                         }
                         if (bset_Lat) {
                             Lat = xpp.getText();
+                            tempList.setLatitude(Lat.toString());
                             Log.d(TAG, "위도" + Lat);
                             arrX.add(new Double(Lat));
                             //t.append("Lat: " + Lat + "\n");
                             bset_Lat = false;
                         }
+
 
 
                     } else if (eventType == XmlPullParser.END_TAG) {
